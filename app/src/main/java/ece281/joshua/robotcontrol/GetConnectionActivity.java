@@ -31,14 +31,37 @@ public class GetConnectionActivity extends ActionBarActivity {
     private BluetoothSocket btSocket = null;
     private OutputStream outStream = null;
 
+    DisplayScreen displayScreen;
+
+
     public void findBluetoothConnection(View view){
         configureBluetooth();
+    }
+
+    public void clickUP(View view){
+        displayScreen.invalidate();
+        //sendData("100 100");
+    }
+
+    public void clickDOWN(View view){
+        sendData("-100 -100");
+    }
+
+    public void clickLEFT(View view){
+        sendData("0 -100");
+    }
+
+    public void clickRIGHT(View view){
+        sendData("-100 0");
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_get_connection);
+        configureBluetooth();
+        displayScreen = (DisplayScreen)findViewById(R.id.displayScreen);
+
     }
 
     public void configureBluetooth(){
@@ -115,25 +138,21 @@ public class GetConnectionActivity extends ActionBarActivity {
         return  device.createRfcommSocketToServiceRecord(MY_UUID);
     }
 
-    public void toggleLED(View view){
 
-        String data = "1";
+    private void sendData(String message) {
+        byte[] msgBuffer = message.getBytes();
 
-        byte[] msgBuffer = data.getBytes();
+        Log.d(BLUETOOTH_SOCKET_TAG, "...Send data: " + message + "...");
 
-        Log.d(BLUETOOTH_SOCKET_TAG, "...Send data: " + data + "...");
+        //if(outS)
 
         try {
             outStream.write(msgBuffer);
         } catch (IOException e) {
-            String msg = "In onResume() and an exception occurred during write: " + e.getMessage();
-            if (arduinoBluetoothModuleAddress.equals("00:00:00:00:00:00"))
-                msg = msg + ".\n\nUpdate your server address from 00:00:00:00:00:00 to the correct address on line 35 in the java code";
-            msg = msg +  ".\n\nCheck that the SPP UUID: " + MY_UUID.toString() + " exists on server.\n\n";
-
-            errorExit("Fatal Error", msg);
+            Toast.makeText(getBaseContext(), "Not Connected to Device", Toast.LENGTH_SHORT).show();
         }
     }
+
 
 
     public void startMainActivity(){
