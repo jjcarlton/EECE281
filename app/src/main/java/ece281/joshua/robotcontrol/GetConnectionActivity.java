@@ -72,38 +72,24 @@ public class GetConnectionActivity extends ActionBarActivity {
     int speedRight = 0;
 
     public void clickUP(View view){
-        if(state.getState() != state.FORWARD){
-            state.setState(state.FORWARD);
-        }
-        else{
-            state.setState(state.IDLE);
-        }
-
-        displayScreen.invalidate();
-
-      //  sendData("100 100");
+        speedLeft = 200;
+        speedRight = 200;
     }
 
     public void clickDOWN(View view){
-        if(state.getState() != state.BACKWARD){
-            state.setState(state.BACKWARD);
-        }
-        else {
-            state.setState(state.IDLE);
-        }
+        speedLeft = -200;
+        speedRight = -200;
     }
 
     public void clickLEFT(View view){
-      /// mConnectedThread.write("-100 100");
-        state.setState(state.LEFT);
-       // sendData("0 -100");
+        speedLeft = -200;
+        speedRight = 200;
 
     }
 
     public void clickRIGHT(View view){
-        state.setState(state.RIGHT);
-
-
+        speedLeft = 200;
+        speedRight = -200;
     }
 
     @Override
@@ -113,23 +99,26 @@ public class GetConnectionActivity extends ActionBarActivity {
        //...............................................................................................................................................0 configureBluetooth();
         txtArduino = (TextView) findViewById(R.id.text_from_arduino);
         displayScreen = (DisplayScreen)findViewById(R.id.displayScreen);
+        displayScreen.updateDisplay(0);
 
-        speedSlider = (SeekBar) findViewById(R.id.seekBar);
-        speedSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            int progressChanged = 0;
+        Button upButton = (Button) findViewById(R.id.up_button);
+        upButton.setOnTouchListener(new View.OnTouchListener() {
 
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                progressChanged = progress;
-                speedSliderValue = progress;
-            }
+            @Override
+            public boolean onTouch(View view, MotionEvent motionevent) {
+                int action = motionevent.getAction();
+                if (action == MotionEvent.ACTION_DOWN) {
+                    up = true;
 
-            public void onStartTrackingTouch(SeekBar seekBar) {
-                // TODO Auto-generated method stub
-            }
+                } else if (action == MotionEvent.ACTION_UP) {
 
-            public void onStopTrackingTouch(SeekBar seekBar) {
-                }
-        });
+
+                }//end else
+                return false;
+            } //end onTouch
+        }); //end b my button
+
+
 
         state = new RobotState();
         h = new Handler() {
@@ -145,7 +134,7 @@ public class GetConnectionActivity extends ActionBarActivity {
                             sb.delete(0, sb.length());                                      // and clear
                           //  Log.d(TAG, sbprint);
                             txtArduino.setText(sbprint);            // update TextView
-
+                           // displayScreen.updateDisplay(Integer.getInteger(sbprint));
                         }
                         //Log.d(TAG, "...String:"+ sb.toString() +  "Byte:" + msg.arg1 + "...");
                         break;
@@ -262,29 +251,6 @@ public class GetConnectionActivity extends ActionBarActivity {
     }
 
     public void sendData(){
-
-
-        if(state.getState() == state.FORWARD){
-            speedLeft = 150 + speedSliderValue;
-            speedRight = 150+  speedSliderValue;
-        }
-        if(state.getState() == state.BACKWARD){
-            speedLeft = -150 -  speedSliderValue;
-            speedRight = -150 -   speedSliderValue;
-        }
-
-        if(state.getState() == state.LEFT){
-            speedLeft = -150 -  speedSliderValue;
-            speedRight = 150 +   speedSliderValue;
-        }
-
-        if(state.getState() == state.RIGHT){
-            speedLeft = 150 +  speedSliderValue;
-            speedRight = -150 -   speedSliderValue;
-        }if(state.getState() == state.IDLE){
-            speedLeft = 0;
-            speedRight = 0;
-        }
 
         String toSend = Integer.toString(speedLeft);
         toSend += "n"+ Integer.toString(speedRight);
